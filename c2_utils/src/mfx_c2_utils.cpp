@@ -572,13 +572,14 @@ int MfxFourCCToGralloc(mfxU32 fourcc, bool using_video_memory)
 {
     MFX_DEBUG_TRACE_FUNC;
     MFX_DEBUG_TRACE_U32(fourcc);
+    (void)using_video_memory;
 
     switch (fourcc)
     {
         case MFX_FOURCC_NV12:
-            return using_video_memory ? HAL_PIXEL_FORMAT_NV12_Y_TILED_INTEL : HAL_PIXEL_FORMAT_NV12;
+            return HAL_PIXEL_FORMAT_YCbCr_420_888;
         case MFX_FOURCC_P010:
-            return using_video_memory ? HAL_PIXEL_FORMAT_P010_INTEL : HAL_PIXEL_FORMAT_YCBCR_P010;
+            return HAL_PIXEL_FORMAT_YCBCR_P010;
         default:
             return 0;
     }

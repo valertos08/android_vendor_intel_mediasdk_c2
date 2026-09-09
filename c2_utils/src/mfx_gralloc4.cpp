@@ -152,7 +152,28 @@ c2_status_t MfxGralloc4Module::GetBufferDetails(const buffer_handle_t handle, Bu
         for(int i = 0; i < planeLayouts.size(); i++)
         {
             details->pitches[i] = planeLayouts[i].strideInBytes;
+            details->offsets[i] = planeLayouts[i].offsetInBytes;
             MFX_DEBUG_TRACE_STREAM("details->pitches[" << i << "] = " << details->pitches[i]);
+            MFX_DEBUG_TRACE_STREAM("details->offsets[" << i << "] = " << details->offsets[i]);
+        }
+
+        if (!IsFailed(Get(importedHnd, gralloc4::MetadataType_PixelFormatModifier, vec)))
+        {
+            uint64_t pixelFormatModifier = 0;
+            if (NO_ERROR == gralloc4::decodePixelFormatModifier(vec, &pixelFormatModifier))
+            {
+                details->formatModifier = pixelFormatModifier;
+                details->hasFormatModifier = true;
+            }
+        }
+        MFX_DEBUG_TRACE_STREAM("details->formatModifier = " << details->formatModifier);
+        MFX_DEBUG_TRACE_STREAM("details->hasFormatModifier = " << details->hasFormatModifier);
+
+        if (!IsFailed(Get(importedHnd, gralloc4::MetadataType_Usage, vec)))
+        {
+            uint64_t usage = 0;
+            if (NO_ERROR == gralloc4::decodeUsage(vec, &usage))
+                MFX_DEBUG_TRACE_STREAM("details->usage = " << usage);
         }
     } while (false);
 

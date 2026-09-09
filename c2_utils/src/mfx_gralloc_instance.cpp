@@ -42,7 +42,7 @@ std::shared_ptr<IMfxGrallocModule> MfxGrallocInstance::getInstance()
             MFX_DEBUG_TRACE_MSG("using mapper5");
             ALOGI("using mapper5");
             m_instance = std::make_shared<MfxMapper5Module>();
-#elif USE_GRALLOC4
+#elif defined(USE_GRALLOC4)
             MFX_DEBUG_TRACE_MSG("using gralloc4");
             ALOGI("using gralloc4");
             m_instance = std::make_shared<MfxGralloc4Module>();

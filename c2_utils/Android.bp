@@ -52,7 +52,7 @@ cc_library_static {
     ],
 
     include_dirs: [
-        "hardware/intel/external/minigbm-intel",
+        "external/minigbm",
         "frameworks/native/include",
         "frameworks/native/libs/ui/include",
         "frameworks/native/libs/nativewindow/include",

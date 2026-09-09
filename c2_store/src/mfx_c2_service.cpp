@@ -102,7 +102,7 @@ void runAidlService() {
         LOG(ERROR) << "Cannot create Codec2's IComponentStore service.";
     } else {
         const std::string serviceName =
-            std::string(IComponentStore::descriptor) + "/default";
+            std::string(IComponentStore::descriptor) + "/intel";
         binder_exception_t ex = AServiceManager_addService(
                 store->asBinder().get(), serviceName.c_str());
         if (ex != EX_NONE) {
@@ -145,7 +145,7 @@ void runHidlService() {
         if (store == nullptr) {
             LOG(ERROR) << "Cannot create Codec2's IComponentStore service.";
         } else {
-            constexpr char const* serviceName = "default";
+            constexpr char const* serviceName = "intel";
             if (store->registerAsService(serviceName) != OK) {
                 LOG(ERROR) << "Cannot register Codec2's IComponentStore service"
                               " with instance name << \""

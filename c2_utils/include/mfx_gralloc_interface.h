@@ -38,8 +38,11 @@ public:
         int format;
         uint32_t planes_count;
         uint32_t pitches[C2PlanarLayout::MAX_NUM_PLANES];// pitch for each plane
+        uint32_t offsets[C2PlanarLayout::MAX_NUM_PLANES];// offset in bytes for each plane
         uint32_t allocWidth;
         uint32_t allocHeight;
+        uint64_t formatModifier;
+        bool hasFormatModifier;
         BufferDetails():
             handle(nullptr),
             prime(-1),
@@ -48,8 +51,11 @@ public:
             format(0),
             planes_count(0),
             pitches{},
+            offsets{},
             allocWidth(0),
-            allocHeight(0)
+            allocHeight(0),
+            formatModifier(0),
+            hasFormatModifier(false)
         {}
     };
 

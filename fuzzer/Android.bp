@@ -50,7 +50,7 @@ cc_defaults {
 
     include_dirs: [
         "vendor/intel/mediasdk_c2/c2_store/include",
-        "hardware/intel/external/minigbm-intel/cros_gralloc",
+        "external/minigbm/cros_gralloc",
     ],
 
     header_libs: [

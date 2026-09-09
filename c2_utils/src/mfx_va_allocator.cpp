@@ -97,8 +97,10 @@ static unsigned int ConvertGrallocFourccToVAFormat(int fourcc)
     {
         case HAL_PIXEL_FORMAT_NV12_Y_TILED_INTEL:
         case HAL_PIXEL_FORMAT_NV12_LINEAR_CAMERA_INTEL:
+        case HAL_PIXEL_FORMAT_YCbCr_420_888:
             return VA_FOURCC_NV12;
         case HAL_PIXEL_FORMAT_P010_INTEL:
+        case HAL_PIXEL_FORMAT_YCBCR_P010:
             return VA_FOURCC_P010;
         case HAL_PIXEL_FORMAT_RGBA_8888:
             return VA_FOURCC_RGBA;
@@ -605,7 +607,12 @@ mfxStatus MfxVaFrameAllocator::CreateSurfaceFromGralloc(const IMfxGrallocModule:
     desc.num_objects = 1;
     desc.objects[0].fd = info.prime;
     desc.objects[0].size = decode_target ? info.pitches[0] * ((height + 31) & ~31) * 1.5 : info.pitches[0] * ((height + 15) & ~15) * 1.5;
-    if (HAL_PIXEL_FORMAT_NV12_Y_TILED_INTEL == info.format || HAL_PIXEL_FORMAT_P010_INTEL == info.format)
+    if (info.hasFormatModifier)
+    {
+        desc.objects[0].drm_format_modifier = info.formatModifier;
+        MFX_DEBUG_TRACE_STREAM("surface modifier from gralloc: " << info.formatModifier);
+    }
+    else if (HAL_PIXEL_FORMAT_NV12_Y_TILED_INTEL == info.format || HAL_PIXEL_FORMAT_P010_INTEL == info.format)
         desc.objects[0].drm_format_modifier = I915_FORMAT_MOD_Y_TILED;
     else
         desc.objects[0].drm_format_modifier = DRM_FORMAT_MOD_LINEAR;
@@ -615,7 +622,11 @@ mfxStatus MfxVaFrameAllocator::CreateSurfaceFromGralloc(const IMfxGrallocModule:
     desc.layers[0].num_planes = info.planes_count;
     desc.layers[0].object_index[0] = 0;
     desc.layers[0].offset[0] = 0;
-    desc.layers[0].offset[1] = decode_target ? info.pitches[0] * ((height + 31) & ~31) : info.pitches[0] * ((height + 15) & ~15);
+    if (info.planes_count > 1)
+        desc.layers[0].offset[1] = info.offsets[1] ? info.offsets[1] :
+            (decode_target ? info.pitches[0] * ((height + 31) & ~31) : info.pitches[0] * ((height + 15) & ~15));
+    else
+        desc.layers[0].offset[1] = 0;
     desc.layers[0].offset[2] = 0;
     desc.layers[0].offset[3] = 0;
     desc.layers[0].pitch[0] = info.pitches[0];
@@ -672,7 +683,9 @@ mfxStatus MfxVaFrameAllocator::MapGrallocBufferToSurface(buffer_handle_t gralloc
 
         if (buffer_details.format == HAL_PIXEL_FORMAT_NV12_Y_TILED_INTEL ||
             buffer_details.format == HAL_PIXEL_FORMAT_NV12_LINEAR_CAMERA_INTEL ||
+            buffer_details.format == HAL_PIXEL_FORMAT_YCbCr_420_888 ||
             buffer_details.format == HAL_PIXEL_FORMAT_P010_INTEL ||
+            buffer_details.format == HAL_PIXEL_FORMAT_YCBCR_P010 ||
             buffer_details.format == HAL_PIXEL_FORMAT_RGBA_8888 ||
             buffer_details.format == HAL_PIXEL_FORMAT_RGBX_8888 ||
             buffer_details.format == HAL_PIXEL_FORMAT_BGRA_8888 ||
