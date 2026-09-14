@@ -100,6 +100,9 @@ bootstrap_go_package {
     name: "mfx_c2",
     pkgPath: "android/soong/vendor/intel/mfx_c2",
     deps: [
+        "blueprint",
+        "soong",
+        "soong-android",
         "soong-cc",
     ],
     srcs: [
